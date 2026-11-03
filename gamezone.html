@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GameZone - Snake Game</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#172554,#080d1b 60%);font-family:Arial,sans-serif;color:#f8fafc;display:flex;justify-content:center;padding:24px 14px}
+main{width:min(100%,460px);text-align:center}
+h1{margin:8px 0;color:#67e8f9;letter-spacing:2px;font-size:2.2rem;text-shadow:0 0 18px #0891b2}
+p{color:#cbd5e1}
+.panel{background:#111c32;border:1px solid #263957;border-radius:18px;padding:16px;box-shadow:0 12px 40px #0006}
+.stats{display:flex;justify-content:space-between;gap:10px;margin-bottom:12px}
+.stat{flex:1;background:#0a1326;border-radius:12px;padding:10px;color:#cbd5e1}
+.stat strong{display:block;color:#67e8f9;font-size:1.3rem;margin-top:4px}
+canvas{display:block;width:100%;max-width:360px;aspect-ratio:1;margin:auto;background:#07111e;border:2px solid #1e7490;border-radius:12px;touch-action:none}
+button{border:0;border-radius:12px;padding:12px 18px;background:#06b6d4;color:#04111b;font-weight:800;font-size:1rem;margin:8px 4px;cursor:pointer}
+button:active{transform:scale(.97)}
+.secondary{background:#263957;color:#f8fafc}
+.controls{display:grid;grid-template-columns:repeat(3,58px);justify-content:center;gap:7px;margin-top:12px}
+.controls button{margin:0;padding:12px 0;font-size:1.2rem}
+.controls .empty{visibility:hidden}
+.note{font-size:.85rem;color:#94a3b8}
+</style>
+</head>
+<body>
+<main>
+<h1>GAMEZONE</h1>
+<p>One game. Endless fun.</p>
+<section class="panel">
+<div class="stats">
+<div class="stat">SCORE<strong id="score">0</strong></div>
+<div class="stat">BEST<strong id="best">0</strong></div>
+</div>
+<canvas id="game" width="360" height="360" aria-label="Snake game board"></canvas>
+<div>
+<button id="start">Start Game</button>
+<button id="restart" class="secondary">Restart</button>
+</div>
+<div class="controls" aria-label="Touch controls">
+<span class="empty"></span><button data-dir="up" aria-label="Up">▲</button><span class="empty"></span>
+<button data-dir="left" aria-label="Left">◀</button><button data-dir="down" aria-label="Down">▼</button><button data-dir="right" aria-label="Right">▶</button>
+</div>
+<p class="note">Use arrow keys or touch buttons. Eat the glowing food and avoid the walls and your tail.</p>
+<div id="message" role="status">Press Start Game to play.</div>
+</section>
+<p class="note">© GameZone</p>
+</main>
+<script>
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),message=document.getElementById('message');
+const size=18,tiles=20;
+let snake,food,dir,nextDir,score,timer=null,running=false;
+let best=Number(localStorage.getItem('gamezone-best')||0);bestEl.textContent=best;
+function reset(){
+ clearInterval(timer);timer=null;running=false;score=0;scoreEl.textContent=0;
+ snake=[{x:8,y:10},{x:7,y:10},{x:6,y:10}];dir={x:1,y:0};nextDir={x:1,y:0};placeFood();draw();
+ message.textContent='Press Start Game to play.';
+}
+function placeFood(){
+ do{food={x:Math.floor(Math.random()*tiles),y:Math.floor(Math.random()*tiles)}}
+ while(snake.some(s=>s.x===food.x&&s.y===food.y));
+}
+function draw(){
+ ctx.fillStyle='#07111e';ctx.fillRect(0,0,360,360);
+ ctx.strokeStyle='#10243a';ctx.lineWidth=1;
+ for(let i=0;i<=tiles;i++){ctx.beginPath();ctx.moveTo(i*size,0);ctx.lineTo(i*size,360);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i*size);ctx.lineTo(360,i*size);ctx.stroke();}
+ ctx.fillStyle='#fb7185';ctx.shadowColor='#fb7185';ctx.shadowBlur=14;ctx.beginPath();ctx.arc(food.x*size+9,food.y*size+9,7,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+ snake.forEach((s,i)=>{ctx.fillStyle=i===0?'#67e8f9':'#22c1a5';ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=i===0?12:3;ctx.fillRect(s.x*size+1,s.y*size+1,size-2,size-2);});ctx.shadowBlur=0;
+}
+function step(){
+ dir=nextDir;const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+ const ate=head.x===food.x&&head.y===food.y;
+ const body=ate?snake:snake.slice(0,-1);
+ if(head.x<0||head.y<0||head.x>=tiles||head.y>=tiles||body.some(s=>s.x===head.x&&s.y===head.y)){endGame();return;}
+ snake.unshift(head);if(ate){score++;scoreEl.textContent=score;if(score>best){best=score;bestEl.textContent=best;localStorage.setItem('gamezone-best',best);}placeFood();}else snake.pop();
+ draw();
+}
+function start(){if(running)return; if(!snake)reset();running=true;message.textContent='Game on!';timer=setInterval(step,135);}
+function endGame(){clearInterval(timer);timer=null;running=false;message.textContent='Game over! Your score: '+score+'. Press Restart to play again.';}
+function change(d){const dirs={up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}};const n=dirs[d];if(n&&!(n.x===-dir.x&&n.y===-dir.y))nextDir=n;}
+document.getElementById('start').addEventListener('click',start);
+document.getElementById('restart').addEventListener('click',()=>{reset();start();});
+document.querySelectorAll('[data-dir]').forEach(b=>b.addEventListener('click',()=>change(b.dataset.dir)));
+document.addEventListener('keydown',e=>{const map={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};if(map[e.key]){e.preventDefault();change(map[e.key]);}});
+let touchX=0,touchY=0;
+canvas.addEventListener('touchstart',e=>{touchX=e.changedTouches[0].clientX;touchY=e.changedTouches[0].clientY;},{passive:true});
+canvas.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-touchX,dy=e.changedTouches[0].clientY-touchY;if(Math.max(Math.abs(dx),Math.abs(dy))>20)change(Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up'));},{passive:true});
+reset();
+</script>
+</body>
+</html>
