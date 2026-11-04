@@ -187,11 +187,20 @@ document.getElementById("gameList").innerHTML=list.length?list.map(g=>
 function selectCategory(c){active=c;renderCategories();renderGames()}
 
 function launch(name,icon){
+if(name.toLowerCase().includes("lost city")){
+window.location.href="./lost-city.html";
+return;
+}
 document.getElementById("modalIcon").textContent=icon;
 document.getElementById("modalTitle").textContent=name;
 document.getElementById("modalText").textContent="This game is listed in RioX Games. Its playable version will be added in the next development update.";
 document.getElementById("modal").style.display="grid";
 }
+
+
+
+
+
 function closeModal(){document.getElementById("modal").style.display="none"}
 renderCategories();renderGames();
 </script>
