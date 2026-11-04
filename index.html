@@ -185,14 +185,17 @@ document.getElementById("gameList").innerHTML=list.length?list.map(g=>
 ).join(""):'<div class="empty">No games found. Try another search!</div>';
 }
 function selectCategory(c){active=c;renderCategories();renderGames()}
-function launch(name,icon){
+document.getElementById("modalIcon").textContent=icon;
+document.getElementById("modalTitle").textContent=name;function launch(name,icon){
+
+if(name==="RioX: Lost City"){
+window.location.href="./lost-city.html";
+return;
+}
+
 document.getElementById("modalIcon").textContent=icon;
 document.getElementById("modalTitle").textContent=name;
 document.getElementById("modalText").textContent="This game is listed in RioX Games. Its playable version will be added in the next development update.";
 document.getElementById("modal").style.display="grid";
+
 }
-function closeModal(){document.getElementById("modal").style.display="none"}
-renderCategories();renderGames();
-</script>
-</body>
-</html>
