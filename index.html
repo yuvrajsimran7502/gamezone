@@ -2,93 +2,197 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GameZone - Snake Game</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090817">
+<title>RioX Games</title>
 <style>
-:root{color-scheme:dark}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#172554,#080d1b 60%);font-family:Arial,sans-serif;color:#f8fafc;display:flex;justify-content:center;padding:24px 14px}
-main{width:min(100%,460px);text-align:center}
-h1{margin:8px 0;color:#67e8f9;letter-spacing:2px;font-size:2.2rem;text-shadow:0 0 18px #0891b2}
-p{color:#cbd5e1}
-.panel{background:#111c32;border:1px solid #263957;border-radius:18px;padding:16px;box-shadow:0 12px 40px #0006}
-.stats{display:flex;justify-content:space-between;gap:10px;margin-bottom:12px}
-.stat{flex:1;background:#0a1326;border-radius:12px;padding:10px;color:#cbd5e1}
-.stat strong{display:block;color:#67e8f9;font-size:1.3rem;margin-top:4px}
-canvas{display:block;width:100%;max-width:360px;aspect-ratio:1;margin:auto;background:#07111e;border:2px solid #1e7490;border-radius:12px;touch-action:none}
-button{border:0;border-radius:12px;padding:12px 18px;background:#06b6d4;color:#04111b;font-weight:800;font-size:1rem;margin:8px 4px;cursor:pointer}
-button:active{transform:scale(.97)}
-.secondary{background:#263957;color:#f8fafc}
-.controls{display:grid;grid-template-columns:repeat(3,58px);justify-content:center;gap:7px;margin-top:12px}
-.controls button{margin:0;padding:12px 0;font-size:1.2rem}
-.controls .empty{visibility:hidden}
-.note{font-size:.85rem;color:#94a3b8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#090817;color:white;font-family:Arial,sans-serif}
+header{position:sticky;top:0;background:#100d20;z-index:5;
+padding:15px 5%;display:flex;justify-content:space-between;
+align-items:center;flex-wrap:wrap;gap:12px;border-bottom:1px solid #392454}
+.logo{font-size:25px;font-weight:900;color:#c084fc}
+.logo span{color:#22d3ee}
+nav{display:flex;gap:15px;flex-wrap:wrap}
+nav a{color:#ddd;text-decoration:none;font-size:13px}
+.hero{margin:25px 5%;padding:40px 25px;border-radius:20px;
+background:radial-gradient(circle at 90% 30%,#8b35d966,transparent 40%),linear-gradient(120deg,#25113e,#102343);
+border:1px solid #7144a2}
+.hero small{color:#22d3ee;letter-spacing:3px}
+.hero h1{font-size:clamp(38px,8vw,65px);margin:16px 0}
+.hero h1 span{color:#c084fc}
+.hero p{color:#ccc;line-height:1.7;max-width:500px}
+.btn,.play{background:linear-gradient(100deg,#9333ea,#2563eb);
+border:0;color:white;padding:11px 16px;border-radius:8px;font-weight:bold}
+.btn{margin-top:20px}
+.stats{margin:0 5% 30px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{background:#17132a;border:1px solid #35244f;padding:17px;text-align:center;border-radius:12px}
+.stat strong{font-size:23px;color:#c084fc}
+.stat p{font-size:12px;color:#aaa;margin-top:5px}
+.section{margin:35px 5%}
+.section h2{font-size:23px;margin-bottom:8px}
+.sub{color:#aaa;font-size:12px;margin-bottom:17px}
+.search{width:100%;padding:15px;background:#17132a;border:1px solid #583b7c;border-radius:10px;color:white;outline:none;margin-bottom:15px}
+.categories{display:flex;gap:9px;overflow-x:auto;padding:5px 0 17px}
+.cat{white-space:nowrap;background:#17132a;color:#ddd;border:1px solid #49345e;padding:10px 16px;border-radius:25px}
+.cat.active{background:#7935bd;color:white}
+.games{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.game{background:linear-gradient(145deg,#201a38,#111020);border:1px solid #35294c;border-radius:15px;padding:15px 9px;text-align:center;transition:.2s}
+.game:hover{transform:translateY(-4px);border-color:#b15cff;box-shadow:0 0 17px #9333ea55}
+.game-icon{font-size:39px;height:65px;display:grid;place-items:center}
+.game h3{font-size:13px;min-height:32px;margin:8px 0}
+.game small{font-size:10px;color:#aaa}
+.play{width:100%;margin-top:12px;padding:9px;font-size:11px}
+.feature{padding:22px;border:1px solid #68458e;border-radius:15px;background:linear-gradient(120deg,#291445,#112c42);margin-top:16px}
+.feature h3{font-size:20px;color:#d8b4fe}
+.feature p{font-size:13px;color:#ccc;line-height:1.7;margin:10px 0}
+.feature button{padding:10px 15px;background:#9333ea;color:white;border:0;border-radius:8px}
+footer{margin-top:45px;padding:35px 5%;background:#100d1d;border-top:1px solid #352452;text-align:center}
+footer p{color:#999;font-size:12px;line-height:2}
+.modalbg{display:none;position:fixed;inset:0;background:#000c;z-index:20;place-items:center;padding:20px}
+.modal{background:#1c1730;border:1px solid #a855f7;border-radius:17px;padding:28px;text-align:center;width:100%;max-width:350px}
+.modal .big{font-size:55px;margin-bottom:12px}
+.modal h2{color:#d8b4fe;margin-bottom:12px}
+.modal p{color:#bbb;font-size:13px;line-height:1.6}
+.modal button{margin-top:18px;padding:11px 22px;background:#9333ea;color:white;border:0;border-radius:8px}
+.empty{grid-column:1/-1;text-align:center;padding:35px;color:#aaa}
+@media(max-width:750px){.games{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:450px){.games{grid-template-columns:repeat(2,1fr)}nav{width:100%;justify-content:space-between}.hero{padding:30px 18px}}
 </style>
 </head>
 <body>
-<main>
-<h1>GAMEZONE</h1>
-<p>One game. Endless fun.</p>
-<section class="panel">
-<div class="stats">
-<div class="stat">SCORE<strong id="score">0</strong></div>
-<div class="stat">BEST<strong id="best">0</strong></div>
-</div>
-<canvas id="game" width="360" height="360" aria-label="Snake game board"></canvas>
-<div>
-<button id="start">Start Game</button>
-<button id="restart" class="secondary">Restart</button>
-</div>
-<div class="controls" aria-label="Touch controls">
-<span class="empty"></span><button data-dir="up" aria-label="Up">▲</button><span class="empty"></span>
-<button data-dir="left" aria-label="Left">◀</button><button data-dir="down" aria-label="Down">▼</button><button data-dir="right" aria-label="Right">▶</button>
-</div>
-<p class="note">Use arrow keys or touch buttons. Eat the glowing food and avoid the walls and your tail.</p>
-<div id="message" role="status">Press Start Game to play.</div>
+<header>
+<div class="logo">⚡ RIO<span>X</span> GAMES</div>
+<nav>
+<a href="#home">Home</a><a href="#games">Games</a><a href="#categories">Categories</a><a href="#about">About</a>
+</nav>
+</header>
+
+<section class="hero" id="home">
+<small>WELCOME TO YOUR GAMING WORLD</small>
+<h1>PLAY BEYOND<br><span>LIMITS.</span></h1>
+<p>Explore exciting arcade games, racing challenges, brain puzzles and amazing adventures. Your gaming world starts here!</p>
+<button class="btn" onclick="document.getElementById('games').scrollIntoView({behavior:'smooth'})">EXPLORE GAMES →</button>
 </section>
-<p class="note">© GameZone</p>
-</main>
+
+<div class="stats">
+<div class="stat"><strong>33</strong><p>GAMES</p></div>
+<div class="stat"><strong>06</strong><p>CATEGORIES</p></div>
+<div class="stat"><strong>FREE</strong><p>TO PLAY</p></div>
+</div>
+
+<section class="section" id="categories">
+<h2>🎯 Explore Categories</h2>
+<p class="sub">Choose your favourite gaming zone</p>
+<div class="categories" id="categoryButtons"></div>
+</section>
+
+<section class="section" id="games">
+<h2>🎮 All Games</h2>
+<p class="sub">33 exciting games waiting for you</p>
+<input class="search" id="search" placeholder="🔍 Search games..." oninput="renderGames()">
+<div class="games" id="gameList"></div>
+
+<div class="feature">
+<h3>🌀 NEON PORTAL: DIMENSION RUSH</h3>
+<p>Travel between mysterious dimensions, collect energy and beat your high score.</p>
+<button onclick="launch('NEON PORTAL: DIMENSION RUSH','🌀')">Explore Game</button>
+</div>
+<div class="feature">
+<h3>🌍 RIOX: LOST CITY</h3>
+<p>Explore a huge world with cities, mountains, vehicles and adventure missions.</p>
+<button onclick="launch('RIOX: LOST CITY','🌍')">Explore Game</button>
+</div>
+<div class="feature">
+<h3>🧟 RIOX: ZOMBIE HUNTERS</h3>
+<p>Explore an abandoned city, survive challenges and rescue survivors.</p>
+<button onclick="launch('RIOX: ZOMBIE HUNTERS','🧟')">Explore Game</button>
+</div>
+</section>
+
+<section class="section" id="about">
+<h2>✨ About RioX Games</h2>
+<p style="color:#bbb;line-height:1.8;font-size:14px">RioX Games brings arcade, racing, puzzles, sports and adventure games together in one gaming destination.</p>
+</section>
+
+<footer>
+<div class="logo">⚡ RIO<span>X</span> GAMES</div>
+<p>PLAY. EXPLORE. REPEAT.</p>
+<p>© 2026 RioX Games. All rights reserved.</p>
+<p>Free gaming platform | No real-money betting</p>
+</footer>
+
+<div class="modalbg" id="modal">
+<div class="modal">
+<div class="big" id="modalIcon">🎮</div>
+<h2 id="modalTitle">Game</h2>
+<p id="modalText">Game information</p>
+<button onclick="closeModal()">CLOSE</button>
+</div>
+</div>
+
 <script>
-const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
-const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),message=document.getElementById('message');
-const size=18,tiles=20;
-let snake,food,dir,nextDir,score,timer=null,running=false;
-let best=Number(localStorage.getItem('gamezone-best')||0);bestEl.textContent=best;
-function reset(){
- clearInterval(timer);timer=null;running=false;score=0;scoreEl.textContent=0;
- snake=[{x:8,y:10},{x:7,y:10},{x:6,y:10}];dir={x:1,y:0};nextDir={x:1,y:0};placeFood();draw();
- message.textContent='Press Start Game to play.';
+const games=[
+["Subway Runner","🏃","Arcade"],
+["Jungle Escape","🌴","Arcade"],
+["Flappy Bird","🐦","Arcade"],
+["Brick Breaker","🧱","Arcade"],
+["Snake X","🐍","Arcade"],
+["Fruit Slice","🍉","Arcade"],
+["Car Racing","🏎️","Racing"],
+["Bike Racing","🏍️","Racing"],
+["Drift Master","🚘","Racing"],
+["Traffic Racer","🚦","Racing"],
+["Monster Truck","🚚","Racing"],
+["Formula Speed","🏁","Racing"],
+["2048","🔢","Puzzle"],
+["Sudoku","🧩","Puzzle"],
+["Tic Tac Toe","⭕","Puzzle"],
+["Memory Match","🧠","Puzzle"],
+["Jigsaw Puzzle","🧩","Puzzle"],
+["Word Search","🔤","Puzzle"],
+["Football Penalty","⚽","Sports"],
+["Basketball Hoops","🏀","Sports"],
+["Cricket Star","🏏","Sports"],
+["Table Tennis","🏓","Sports"],
+["Color Sort","🎨","Casual"],
+["Bubble Shooter","🫧","Casual"],
+["Chess","♟️","Casual"],
+["Checkers","🔴","Casual"],
+["Whack A Mole","🔨","Casual"],
+["Piano Tiles","🎹","Casual"],
+["Dice Challenge","🎲","Casual"],
+["Reaction Test","⚡","Casual"],
+["Neon Portal: Dimension Rush","🌀","Adventure"],
+["RioX: Lost City","🌍","Adventure"],
+["RioX: Zombie Hunters","🧟","Survival"]
+];
+
+const categories=["All Games","Arcade","Racing","Puzzle","Sports","Casual","Adventure","Survival"];
+let active="All Games";
+
+function renderCategories(){
+document.getElementById("categoryButtons").innerHTML=categories.map(c=>
+`<button class="cat ${active===c?'active':''}" onclick="selectCategory('${c}')">${c}</button>`
+).join("");
 }
-function placeFood(){
- do{food={x:Math.floor(Math.random()*tiles),y:Math.floor(Math.random()*tiles)}}
- while(snake.some(s=>s.x===food.x&&s.y===food.y));
+
+function renderGames(){
+const q=document.getElementById("search").value.toLowerCase();
+const list=games.filter(g=>(active==="All Games"||g[2]===active)&&g[0].toLowerCase().includes(q));
+document.getElementById("gameList").innerHTML=list.length?list.map(g=>
+`<div class="game"><div class="game-icon">${g[1]}</div><h3>${g[0]}</h3><small>${g[2]}</small><button class="play" onclick="launch('${g[0]}','${g[1]}')">PLAY NOW</button></div>`
+).join(""):'<div class="empty">No games found. Try another search!</div>';
 }
-function draw(){
- ctx.fillStyle='#07111e';ctx.fillRect(0,0,360,360);
- ctx.strokeStyle='#10243a';ctx.lineWidth=1;
- for(let i=0;i<=tiles;i++){ctx.beginPath();ctx.moveTo(i*size,0);ctx.lineTo(i*size,360);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i*size);ctx.lineTo(360,i*size);ctx.stroke();}
- ctx.fillStyle='#fb7185';ctx.shadowColor='#fb7185';ctx.shadowBlur=14;ctx.beginPath();ctx.arc(food.x*size+9,food.y*size+9,7,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
- snake.forEach((s,i)=>{ctx.fillStyle=i===0?'#67e8f9':'#22c1a5';ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=i===0?12:3;ctx.fillRect(s.x*size+1,s.y*size+1,size-2,size-2);});ctx.shadowBlur=0;
+function selectCategory(c){active=c;renderCategories();renderGames()}
+function launch(name,icon){
+document.getElementById("modalIcon").textContent=icon;
+document.getElementById("modalTitle").textContent=name;
+document.getElementById("modalText").textContent="This game is listed in RioX Games. Its playable version will be added in the next development update.";
+document.getElementById("modal").style.display="grid";
 }
-function step(){
- dir=nextDir;const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
- const ate=head.x===food.x&&head.y===food.y;
- const body=ate?snake:snake.slice(0,-1);
- if(head.x<0||head.y<0||head.x>=tiles||head.y>=tiles||body.some(s=>s.x===head.x&&s.y===head.y)){endGame();return;}
- snake.unshift(head);if(ate){score++;scoreEl.textContent=score;if(score>best){best=score;bestEl.textContent=best;localStorage.setItem('gamezone-best',best);}placeFood();}else snake.pop();
- draw();
-}
-function start(){if(running)return; if(!snake)reset();running=true;message.textContent='Game on!';timer=setInterval(step,135);}
-function endGame(){clearInterval(timer);timer=null;running=false;message.textContent='Game over! Your score: '+score+'. Press Restart to play again.';}
-function change(d){const dirs={up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}};const n=dirs[d];if(n&&!(n.x===-dir.x&&n.y===-dir.y))nextDir=n;}
-document.getElementById('start').addEventListener('click',start);
-document.getElementById('restart').addEventListener('click',()=>{reset();start();});
-document.querySelectorAll('[data-dir]').forEach(b=>b.addEventListener('click',()=>change(b.dataset.dir)));
-document.addEventListener('keydown',e=>{const map={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};if(map[e.key]){e.preventDefault();change(map[e.key]);}});
-let touchX=0,touchY=0;
-canvas.addEventListener('touchstart',e=>{touchX=e.changedTouches[0].clientX;touchY=e.changedTouches[0].clientY;},{passive:true});
-canvas.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-touchX,dy=e.changedTouches[0].clientY-touchY;if(Math.max(Math.abs(dx),Math.abs(dy))>20)change(Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up'));},{passive:true});
-reset();
+function closeModal(){document.getElementById("modal").style.display="none"}
+renderCategories();renderGames();
 </script>
 </body>
 </html>
