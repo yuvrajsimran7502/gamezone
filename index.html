@@ -185,6 +185,7 @@ document.getElementById("gameList").innerHTML=list.length?list.map(g=>
 ).join(""):'<div class="empty">No games found. Try another search!</div>';
 }
 function selectCategory(c){active=c;renderCategories();renderGames()}
+
 function launch(name,icon){
 document.getElementById("modalIcon").textContent=icon;
 document.getElementById("modalTitle").textContent=name;
